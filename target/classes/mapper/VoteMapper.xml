@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vote.dao.VoteMapper">
+    <insert id="save" parameterType="Vote" useGeneratedKeys="true" keyProperty="id">
+        insert into `vote` (user_id, files, content, publish_time, finish_time, is_hot, create_time, update_time, status,`type`)
+        values (#{userId}, #{files}, #{content}, #{publishTime},#{finishTime},#{isHot}, #{createTime}, #{updateTime}, #{status},#{type});
+    </insert>
+
+    <resultMap id="VoteMap" type="Vote">
+        <id property="id" column="id" />
+        <result property="userId" column="user_id" />
+        <result property="content" column="content" />
+        <result property="publishTime" column="publish_time" />
+        <result property="finishTime" column="finish_time" />
+        <result property="isHot" column="is_hot" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="status" column="status" />
+        <result property="type" column="type" />
+    </resultMap>
+
+    <select id="findHotVote" resultMap="VoteMap">
+        select * from vote where status = 1 and is_hot=1 and publish_time &lt; #{now} order by publish_time desc
+    </select>
+
+    <select id="findVote" resultMap="VoteMap">
+        select * from vote where status = 1 and publish_time &lt; #{param1}
+        <if test="param2 != null and param2 != ''">
+           and `type` like CONCAT(CONCAT('%', #{param2}), '%')
+        </if>
+        order by publish_time desc
+    </select>
+
+    <select id="findUserChoice" resultType="Long">
+        select item_id from user_choice where user_id = #{userId}
+    </select>
+
+    <select id="findItemCount" resultType="Int">
+        select count(*) from user_choice where item_id = #{itemId}
+    </select>
+
+    <select id="findUserLike" resultType="Int">
+        select count(*) from `like` where vote_id = #{param2} and user_id = #{param1}
+    </select>
+
+    <select id="findLikeCount" resultType="Int">
+        select count(*) from `like` where vote_id = #{voteId}
+    </select>
+
+    <select id="selectCommentTop" resultType="Comment">
+        select * from `comment` where vote_id = #{id} and parent_id is null
+    </select>
+</mapper>

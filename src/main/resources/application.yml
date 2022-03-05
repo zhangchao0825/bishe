@@ -1,0 +1,32 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    druid:
+      # 初始化连接池的连接数量
+      initial-size: 10
+      # 最小连接池数量
+      min-idle: 10
+      # 最大连接池数量
+      max-active: 40
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      # 检测间隔时间，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 单个连接在连接时间，单位是毫秒
+      min-evictable-idle-time-millis: 30000
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/vote_system?serverTimezone=Asia/Shanghai&allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 123456
+  redis:
+    host: 192.168.43.190
+    password: 123456
+    port: 6379
+  servlet:
+    multipart:
+      max-request-size: 101MB
+      max-file-size: 101MB
+mybatis:
+  type-aliases-package: com.vote.entity
+  mapper-locations: classpath:mapper/*.xml

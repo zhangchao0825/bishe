@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vote.dao.UserMapper">
+    <resultMap id="MyUserMap" type="MyUser">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="photo" column="photo" />
+        <result property="sex" column="sex" />
+        <result property="loginTime" column="login_time" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="status" column="status" />
+    </resultMap>
+    
+    <select id="selectByUsername" parameterType="String" resultMap="MyUserMap">
+        SELECT id,
+               username,
+               password,
+               photo,
+               sex,
+               login_time,
+               create_time,
+               update_time,
+               status
+        FROM `user`
+        where username = #{username} and status = 1;
+    </select>
+
+    <insert id="insertNewUser" parameterType="MyUser" useGeneratedKeys="true" keyProperty="id">
+        insert into `user` (username, password, photo, sex, login_time, create_time, update_time, status)
+        values (#{username}, #{password}, #{photo}, #{sex}, #{loginTime}, #{createTime}, #{updateTime}, #{status});
+    </insert>
+
+    <select id="selectUserPermission" parameterType="String" resultType="String">
+        select p.permission_name
+        from permission p
+        where p.id in (select rp.permission_id
+                       from role_permission rp
+                       where rp.role_id in (select r.role_id
+                                            from user_role r
+                                            where r.user_id =
+                                                  (select `user`.id from `user` where `user`.username = #{username})));
+    </select>
+
+    <update id="updateLoginTime">
+        update user set login_time = #{loginTime} where username = #{username}
+    </update>
+
+    <update id="updateUsernameSex" parameterType="MyUser">
+        update user set sex = #{sex} where id = #{id}
+    </update>
+
+    <update id="updatePhoto" parameterType="MyUser">
+        update user set photo = #{photo} where id = #{id}
+    </update>
+
+    <select id="selectById" parameterType="Long" resultType="MyUser">
+        SELECT id,
+               username,
+               password,
+               photo,
+               sex,
+               login_time,
+               create_time,
+               update_time,
+               status
+        FROM `user`
+        where id = #{id} and status = 1;
+    </select>
+
+    <update id="updatePass" parameterType="MyUser">
+        update user set password = #{password} where id = #{id}
+    </update>
+</mapper>
